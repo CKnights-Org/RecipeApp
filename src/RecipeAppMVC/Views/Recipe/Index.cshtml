@@ -1,0 +1,29 @@
+﻿@using RecipeAppMVC.Controllers;
+@using RecipeAppMVC.Models.Recipe;
+@model List<RecipeSummaryModel>
+
+@{
+    var recipeControllerName = nameof(RecipeController);
+    recipeControllerName = recipeControllerName.Substring(0, recipeControllerName.LastIndexOf("Controller"));
+}
+
+<div class="container">
+    <div class="row">
+        @foreach (var item in Model)
+        {
+            <div class="col-lg-4 col-md-6 col-sm-12">
+                <div class="card">
+                    <!-- https://images.pexels.com/photos/2486168/pexels-photo-2486168.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1 -->
+                    <!-- https://i.redd.it/c3uhsgo1vx541.jpg -->
+                    <img class="card-img-top img-fluid" src="https://i.redd.it/c3uhsgo1vx541.jpg" alt="Card image cap">
+                    <div class="card-body">
+                        <h5 class="card-title">@item.Name</h5>
+                        <p class="card-text">@item.Description</p>
+                        <p class="card-text">@($"{item.ReviewsSummary.Rating}/5 ({item.ReviewsSummary.RatingCount})")</p>
+                        @Html.ActionLink("Go to", nameof(RecipeController.Detail), recipeControllerName, new { id = item.Id})
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

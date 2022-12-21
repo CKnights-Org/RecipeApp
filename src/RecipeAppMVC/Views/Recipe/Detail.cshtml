@@ -1,0 +1,21 @@
+﻿@using RecipeAppMVC.Models.Recipe;
+
+@model RecipeDetailModel;
+
+<p>@Model.Name</p>
+
+<ul class="list-group">
+    @foreach (var ingredient in Model.Ingredients)
+    {
+        <li class="list-group-item">@($"{ingredient.Amount}{ingredient.TypeOfAmount} {ingredient.Name}")</li>
+    }
+</ul>
+
+<p>@($"{Model.ReviewsSummary.Rating}/5 ({Model.ReviewsSummary.RatingCount})")</p>
+
+<ul class="list-group">
+    @foreach (var review in Model.Reviews)
+    {
+        <li class="list-group-item">@($"{review.ReviewerName} -> {review.Rating}")</li>
+    }
+</ul>
