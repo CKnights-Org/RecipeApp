@@ -5,7 +5,7 @@ namespace RecipeAppMVC.Models.Recipe
 {
     public class ReviewModel
     {
-        public string ReviewerName { get; set; }
+        public string ReviewerName { get; set; } = null!;
 
         [Range(1, 5)]
         public int Rating { get; set; }
