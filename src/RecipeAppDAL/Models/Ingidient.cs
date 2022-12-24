@@ -8,8 +8,8 @@ namespace RecipeAppDAL.Models
 {
     public class Ingredient : BaseEntity
     {
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
 
-        public virtual List<IngredientRecipe> IngredientRecipe { get; set; }
+        public virtual List<IngredientRecipe> IngredientRecipe { get; set; } = null!;
     }
 }
