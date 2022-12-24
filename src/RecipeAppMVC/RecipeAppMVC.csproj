@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\RecipeAppDAL\RecipeAppDAL.csproj" />
+    <ProjectReference Include="..\RecipeApp.IdentityLayer\RecipeApp.IdentityLayer.csproj" />
   </ItemGroup>
 
   <ItemGroup>
