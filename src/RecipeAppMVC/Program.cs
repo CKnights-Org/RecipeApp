@@ -1,8 +1,9 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using PizzaShopDAL.Data;
 using RecipeAppMVC.Configs;
 using RecipeApp.IdentityLayer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Builder;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,7 +13,6 @@ builder.Configuration["ConnectionStrings:DefaultConnection"] = $"Data Source={Pa
 
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
 // registration of DBContext as SQLite
 builder.Services.AddDbContext<RecipeAppDBContext>(o =>
 {
@@ -26,6 +26,9 @@ builder.Services.AddAppIdentity(builder.Configuration);
 
 // custom mapster config
 builder.Services.RegisterMapsterConfiguration();
+
+builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
+builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
 
 var app = builder.Build();
 
@@ -45,8 +48,10 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
+    endpoints.MapRazorPages();
+});
 
 app.Run();
