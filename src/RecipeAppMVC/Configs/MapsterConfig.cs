@@ -20,9 +20,6 @@ namespace RecipeAppMVC.Configs
                 .Map(dest => dest.RatingCount, src => src.Count());
 
             TypeAdapterConfig.GlobalSettings.NewConfig<Recipe, DeleteViewModel>()
-                .Map(dest => dest.Id, src => src.Id)
-                .Map(dest => dest.Name, src => src.Name)
-                .Map(dest => dest.Description, src => src.Description)
                 .AfterMappingAsync((poco, dto) => {
                     dto.Ingredients = poco.IngredientRecipe;
                     return Task.CompletedTask;

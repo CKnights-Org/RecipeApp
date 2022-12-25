@@ -34,10 +34,30 @@ namespace PizzaShopDAL.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            foreach (var relationship in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
-            {
-                relationship.DeleteBehavior = DeleteBehavior.Cascade;
-            }
+            modelBuilder.Entity<Recipe>()
+                .HasMany(x => x.IngredientRecipe)
+                .WithOne(x => x.Recipe);
+
+            modelBuilder.Entity<Ingredient>()
+                .HasMany(x => x.IngredientRecipe)
+                .WithOne(x => x.Ingredient);
+
+            modelBuilder.Entity<IngredientRecipe>()
+                .HasOne(x => x.Recipe)
+                .WithMany(x => x.IngredientRecipe);
+            modelBuilder.Entity<IngredientRecipe>()
+                .HasOne(x => x.Ingredient)
+                .WithMany(x => x.IngredientRecipe);
+
+            modelBuilder.Entity<Recipe>()
+                .HasMany(x => x.Reviews)
+                .WithOne(x => x.Recipe);
+
+
+            // foreach (var relationship in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
+            // {
+            //     relationship.DeleteBehavior = DeleteBehavior.NoAction;
+            // }
 
             modelBuilder.Seed();
 
