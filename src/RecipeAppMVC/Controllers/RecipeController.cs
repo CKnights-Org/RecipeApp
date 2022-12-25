@@ -73,7 +73,7 @@ namespace RecipeAppMVC.Controllers
 
             return RedirectToAction(nameof(Index));
         }
-        
+
         [HttpGet, Authorize]
         public async Task<IActionResult> Delete(int? id)
         {
@@ -85,18 +85,21 @@ namespace RecipeAppMVC.Controllers
             if (recipe == null)
                 return NotFound();
 
-
-            return View(recipe.Adapt<DeleteViewModel>());
+            var vm = await recipe.BuildAdapter().AdaptToTypeAsync<DeleteViewModel>();
+            return View(vm);
         }
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirm(int id)
+        public async Task<IActionResult> DeleteConfirm(int id, DeleteViewModel vm)
         {
             if (id == 0)
                 return BadRequest();
             var recipe = await _db.Recipes.FirstOrDefaultAsync(x => x.Id == id);
             if (recipe == null)
                 return NotFound();
+            var reviews = _db.Reviews.Where(x => x.Recipe == recipe);
+            _db.Reviews.RemoveRange(reviews);
+            _db.Ingredients.RemoveRange(recipe.IngredientRecipe.Select(x => x.Ingredient));
             _db.Recipes.Remove(recipe);
             await _db.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
