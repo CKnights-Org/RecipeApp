@@ -8,12 +8,10 @@ namespace RecipeAppMVC.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly RecipeAppDBContext _dBContext;
 
-        public HomeController(ILogger<HomeController> logger, RecipeAppDBContext dBContext)
+        public HomeController(ILogger<HomeController> logger)
         {
             _logger = logger;
-            _dBContext = dBContext;
         }
 
         public IActionResult Index()
@@ -29,6 +27,7 @@ namespace RecipeAppMVC.Controllers
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
+            _logger.LogWarning("Request with id: {id} failed", Activity.Current?.Id ?? HttpContext.TraceIdentifier);
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
