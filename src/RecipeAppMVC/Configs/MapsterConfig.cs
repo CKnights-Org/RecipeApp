@@ -1,8 +1,9 @@
 ﻿using Mapster;
 using RecipeAppDAL.Models;
 using RecipeAppMVC.Models.Recipe;
+using RecipeAppMVC.ViewModels.Recipe;
 using System;
-
+#pragma warning disable IDE0060
 namespace RecipeAppMVC.Configs
 {
     public static class MapsterConfig
@@ -17,6 +18,13 @@ namespace RecipeAppMVC.Configs
                 .NewConfig()
                 .Map(dest => dest.Rating, src => src.Any() ? src.Sum(r => r.Rating) / src.Count() : 0)
                 .Map(dest => dest.RatingCount, src => src.Count());
+
+            TypeAdapterConfig<Recipe, DeleteViewModel>
+                .NewConfig()
+                .Map(dest => dest.Id, src => src.Id)
+                .Map(dest => dest.Name, src => src.Name)
+                .Map(dest => dest.Description, src => src.Description);
         }
     }
 }
+#pragma warning restore IDE0060
