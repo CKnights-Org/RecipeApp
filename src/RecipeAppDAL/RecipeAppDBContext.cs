@@ -26,7 +26,7 @@ namespace PizzaShopDAL.Data
 
         protected DbSet<IngredientRecipe> IngredientsWithAmount { get; set; }
 
-        public RecipeAppDBContext(DbContextOptions options) : base(options)
+        public RecipeAppDBContext(DbContextOptions<RecipeAppDBContext> options) : base(options)
         {
         }
 

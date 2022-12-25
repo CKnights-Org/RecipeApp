@@ -2,10 +2,10 @@
 {
     public class IngredientModel
     {
-        public string Name { get; set; }
+        public string Name { get; set; }= null!;
 
         public int Amount { get; set; }
 
-        public string TypeOfAmount { get; set; }
+        public string TypeOfAmount { get; set; }= null!;
     }
 }

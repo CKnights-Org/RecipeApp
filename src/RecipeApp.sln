@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RecipeAppMVC", "RecipeAppMV
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RecipeAppDAL", "RecipeAppDAL\RecipeAppDAL.csproj", "{6E773604-3234-4EA9-9B98-A0CDF9E9A1A4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RecipeApp.IdentityLayer", "RecipeApp.IdentityLayer\RecipeApp.IdentityLayer.csproj", "{35979EE2-CE64-4621-949E-5F89CE7E7162}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{6E773604-3234-4EA9-9B98-A0CDF9E9A1A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6E773604-3234-4EA9-9B98-A0CDF9E9A1A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6E773604-3234-4EA9-9B98-A0CDF9E9A1A4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{35979EE2-CE64-4621-949E-5F89CE7E7162}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{35979EE2-CE64-4621-949E-5F89CE7E7162}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{35979EE2-CE64-4621-949E-5F89CE7E7162}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{35979EE2-CE64-4621-949E-5F89CE7E7162}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
