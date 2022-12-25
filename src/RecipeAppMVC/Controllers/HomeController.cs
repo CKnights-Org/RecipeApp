@@ -18,7 +18,6 @@ namespace RecipeAppMVC.Controllers
 
         public IActionResult Index()
         {
-            var a = _dBContext.Recipes.ToList();
             return View();
         }
 

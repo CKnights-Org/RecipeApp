@@ -18,13 +18,13 @@ namespace PizzaShopDAL.Data
         /* Toto nieje spravna cesta, ako to robit, avsak pre demonstraciu postacujuca */
         // private const string DatabaseName = "PizzaShop";
         // private const string ConnectionString = $"Server=(localdb)\\mssqllocaldb;Integrated Security=True;MultipleActiveResultSets=True;Database={DatabaseName};Trusted_Connection=True;";
-        public string DbPath { get; }
+        public string? DbPath { get; }
 
-        public DbSet<Recipe> Recipes { get; set; }
-        public DbSet<Ingredient> Ingredients { get; set; }
-        public DbSet<Review> Reviews { get; set; }
+        public DbSet<Recipe> Recipes { get; set; } = null!;
+        public DbSet<Ingredient> Ingredients { get; set; } = null!;
+        public DbSet<Review> Reviews { get; set; } = null!;
 
-        protected DbSet<IngredientRecipe> IngredientsWithAmount { get; set; }
+        protected DbSet<IngredientRecipe> IngredientsWithAmount { get; set; } = null!;
 
         public RecipeAppDBContext(DbContextOptions<RecipeAppDBContext> options) : base(options)
         {

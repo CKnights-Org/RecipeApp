@@ -3,7 +3,7 @@
 #nullable disable
 
 #pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
-
+#pragma warning disable IDE1006
 namespace RecipeAppDAL.Migrations
 {
     /// <inheritdoc />
@@ -161,3 +161,4 @@ namespace RecipeAppDAL.Migrations
         }
     }
 }
+#pragma warning restore IDE1006
