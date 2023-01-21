@@ -3,7 +3,6 @@
 @model List<RecipeSummaryModel>
 @{
     ViewData["Title"] = "Confirm deletion";
-    var recipeControllerName = nameof(RecipeController);
 }
 
 <div class="container">
@@ -25,4 +24,5 @@
             </div>
         }
     </div>
+    <a asp-action="Create">Add new Recipe</a>
 </div>
