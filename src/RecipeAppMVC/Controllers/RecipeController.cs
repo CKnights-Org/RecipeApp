@@ -61,37 +61,45 @@ namespace RecipeAppMVC.Controllers
             if (!ModelState.IsValid)
                 return View(viewModel);
 
-            if (viewModel.NewIngredient != null)
-            {
-                var output = new CreateViewModel
-                {
-                    Ingredients = viewModel.Ingredients,
-                    Name = viewModel.Name,
-                    Description = viewModel.Description
-                };
-
-                var ingredientInDB = await _db.Ingredients.FirstOrDefaultAsync(x => x.Id == viewModel.NewIngredient.Id);
-
-                if (ingredientInDB != null)
-                {
-                    viewModel.NewIngredient = ingredientInDB.Adapt(viewModel.NewIngredient);
-                }
-                
-                output.Ingredients.Add(viewModel.NewIngredient);
-
-                //i dont like it aswell, but for now it works
-                output.IngredientsSelection = (await _db.Ingredients.AsNoTracking().ToListAsync()).Adapt<List<IngredientModel>>()
-                    .Select(x => new SelectListItem
-                    {
-                        Value = x.Id.ToString(),
-                        Text = x.Name
-                    });
-
-                return View(output);
-            }
 
             return RedirectToAction(nameof(Index));
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddIngredient(CreateViewModel viewModel)
+        {
+            //i dont like it aswell, but for now it works
+            var selection = (await _db.Ingredients.AsNoTracking().ToListAsync()).Adapt<List<IngredientModel>>().Select(x => new SelectListItem
+            {
+                Value = x.Id.ToString(),
+                Text = x.Name
+            });
+            if (!ModelState.IsValid)
+            {
+                viewModel.IngredientsSelection = selection;
+                return View(nameof(Create), viewModel);
+            }
+            var output = new CreateViewModel
+            {
+                Ingredients = viewModel.Ingredients,
+                Name = viewModel.Name,
+                Description = viewModel.Description
+            };
+
+            var ingredientInDB = await _db.Ingredients.FirstOrDefaultAsync(x => x.Id == viewModel.NewIngredient.Id);
+
+            if (ingredientInDB != null)
+            {
+                viewModel.NewIngredient = ingredientInDB.Adapt(viewModel.NewIngredient);
+            }
+
+            output.Ingredients.Add(viewModel.NewIngredient);
+
+            output.IngredientsSelection = selection;
+            return View(nameof(Create), output);
+        }
+
 
         [HttpGet, Authorize]
         public async Task<IActionResult> Edit(int? id)

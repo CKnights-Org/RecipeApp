@@ -1,15 +1,13 @@
 @model RecipeAppMVC.ViewModels.Recipe.CreateViewModel
 @using RecipeAppDAL.Models
 @{
-    ViewData["Title"] = "Create new Recipe";
+ViewData["Title"] = "Create new Recipe";
 }
-
-<form method="post">
+<form method="post" asp-action="Create" id="createRecipeForm">
     <div class="row">
         <div class="col-1"></div>
         <div class="col-10">
             <h3>Are you sure you want to delete the recipe?</h3>
-            <intput type="hidden" asp-for="Id" />
             <div class="form-group row">
                 <div class="col">
                     <label asp-for="Name" class="form-label"></label>
@@ -24,21 +22,19 @@
             <div class="form-group">
                 <label>Ingredients: </label>
                 <ul>
-                    @for (var i = 0; i < @Model.Ingredients.Count; i++)
-                    {
-                        <li>
-                            <input type="hidden" asp-for="Ingredients[i].Id">
-                            <input type="hidden" asp-for="Ingredients[i].TypeOfAmount">
-                            <input type="hidden" asp-for="Ingredients[i].Amount">
-                            <input type="hidden" asp-for="Ingredients[i].Name">
-                            @Model.Ingredients[i].Amount @Model.Ingredients[i].TypeOfAmount of
-                            @Model.Ingredients[i].Name
+                    @for (var i = 0; i < @Model.Ingredients.Count; i++) { <li>
+                        <input type="hidden" asp-for="Ingredients[i].Id">
+                        <input type="hidden" asp-for="Ingredients[i].TypeOfAmount">
+                        <input type="hidden" asp-for="Ingredients[i].Amount">
+                        <input type="hidden" asp-for="Ingredients[i].Name">
+                        @Model.Ingredients[i].Amount @Model.Ingredients[i].TypeOfAmount of
+                        @Model.Ingredients[i].Name
                         </li>
-                    }
+                        }
                 </ul>
-                <a type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addIngredientModal">Add Ingredient</a>
+                <a type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addIngredientModal">Add
+                    Ingredient</a>
             </div>
-
             <div class="form-group mt-3">
                 <input type="submit" value="Create new Recipe" class="btn btn-primary" />
                 <a class="btn btn-secondary" asp-action="Index">Go back</a>
@@ -46,6 +42,8 @@
         </div>
         <div class="col-1"></div>
     </div>
+</form>
+<form method="post" asp-action="addIngredient" id="addIngredientForm">
     <div class="modal fade" id="addIngredientModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -54,8 +52,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <select class="form-select" asp-for="NewIngredient.Id"
-                        asp-items="@Model.IngredientsSelection">
+                    <select class="form-select" asp-for="NewIngredient.Id" asp-items="@Model.IngredientsSelection">
                         <option selected value="">Please select an Ingredient</option>
                     </select>
                     <div class="form-group row">
@@ -70,10 +67,27 @@
                     </div>
                 </div>
                 <div class="modal-footer">
+                    <input asp-for="Name" hidden />
+                    <input asp-for="Description" hidden />
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Add Ingredient</button>
+                    <input type="submit" value="Add Ingredient" class="btn btn-primary" />
                 </div>
             </div>
         </div>
     </div>
+
+    @for (var i = 0; i < @Model.Ingredients.Count; i++) {
+        <input type="hidden" asp-for="Ingredients[i].Id">
+        <input type="hidden" asp-for="Ingredients[i].TypeOfAmount">
+        <input type="hidden" asp-for="Ingredients[i].Amount">
+        <input type="hidden" asp-for="Ingredients[i].Name">
+        }
 </form>
+
+@section Scripts {
+    <script>
+        $('#createRecipeForm input.form-control').on("input", function (e) {
+            $('#addIngredientForm #'+e.target.name).val(e.target.value);
+        })
+    </script>
+}
