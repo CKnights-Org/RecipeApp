@@ -43,9 +43,10 @@ namespace RecipeAppMVC.Controllers
         [HttpGet, Authorize]
         public async Task<IActionResult> Create()
         {
+            var ingredientsAfterAdapt = (await _db.Ingredients.AsNoTracking().ToListAsync()).Adapt<List<IngredientModel>>();
             return View(new CreateViewModel
             {
-                IngredientsSelection = (await _db.Ingredients.AsNoTracking().ToListAsync()).Select(x => new SelectListItem
+                IngredientsSelection = ingredientsAfterAdapt.Select(x => new SelectListItem
                 {
                     Value = x.Id.ToString(),
                     Text = x.Name
@@ -57,6 +58,9 @@ namespace RecipeAppMVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateConfirm(CreateViewModel viewModel)
         {
+            if (!ModelState.IsValid)
+                return View(viewModel);
+
             if (viewModel.NewIngredient != null)
             {
                 var output = new CreateViewModel
@@ -65,19 +69,26 @@ namespace RecipeAppMVC.Controllers
                     Name = viewModel.Name,
                     Description = viewModel.Description
                 };
-                viewModel.NewIngredient.Ingredient = await _db.Ingredients.FirstOrDefaultAsync(x => x.Id == viewModel.NewIngredient.IngredientID);
-                output.Ingredients.Add(viewModel.NewIngredient);
-                
-                //i dont like it aswell, but for now it works
-                output.IngredientsSelection = (await _db.Ingredients.AsNoTracking().ToListAsync()).Select(x => new SelectListItem
+
+                var ingredientInDB = await _db.Ingredients.FirstOrDefaultAsync(x => x.Id == viewModel.NewIngredient.Id);
+
+                if (ingredientInDB != null)
                 {
-                    Value = x.Id.ToString(),
-                    Text = x.Name
-                });
+                    viewModel.NewIngredient = ingredientInDB.Adapt(viewModel.NewIngredient);
+                }
+                
+                output.Ingredients.Add(viewModel.NewIngredient);
+
+                //i dont like it aswell, but for now it works
+                output.IngredientsSelection = (await _db.Ingredients.AsNoTracking().ToListAsync()).Adapt<List<IngredientModel>>()
+                    .Select(x => new SelectListItem
+                    {
+                        Value = x.Id.ToString(),
+                        Text = x.Name
+                    });
+
                 return View(output);
             }
-            if (!ModelState.IsValid)
-                return View(viewModel);
 
             return RedirectToAction(nameof(Index));
         }

@@ -10,7 +10,12 @@ namespace RecipeAppMVC.Configs
     {
         public static void RegisterMapsterConfiguration(this IServiceCollection services)
         {
-            TypeAdapterConfig<IngredientRecipe, IngredientModel>
+            TypeAdapterConfig<Ingredient, IngredientModel>
+                .NewConfig()
+                .Map(dest => dest.Name, src => src.Name)
+                .Map(dest => dest.Id, src => src.Id);
+
+            TypeAdapterConfig<IngredientRecipe, IngredientModel>    
                 .NewConfig()
                 .Map(dest => dest.Name, src => src.Ingredient.Name);
 

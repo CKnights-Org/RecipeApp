@@ -27,17 +27,16 @@
                     @for (var i = 0; i < @Model.Ingredients.Count; i++)
                     {
                         <li>
-                            <input type="hidden" asp-for="Ingredients[i].IngredientID">
+                            <input type="hidden" asp-for="Ingredients[i].Id">
                             <input type="hidden" asp-for="Ingredients[i].TypeOfAmount">
                             <input type="hidden" asp-for="Ingredients[i].Amount">
-                            <input type="hidden" asp-for="Ingredients[i].Ingredient.Name">
+                            <input type="hidden" asp-for="Ingredients[i].Name">
                             @Model.Ingredients[i].Amount @Model.Ingredients[i].TypeOfAmount of
-                            @Model.Ingredients[i].Ingredient.Name
+                            @Model.Ingredients[i].Name
                         </li>
                     }
                 </ul>
-                <a type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addIngredientModal">Add
-                    Ingredient</a>
+                <a type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addIngredientModal">Add Ingredient</a>
             </div>
 
             <div class="form-group mt-3">
@@ -55,7 +54,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <select class="form-select" asp-for="NewIngredient.IngredientID"
+                    <select class="form-select" asp-for="NewIngredient.Id"
                         asp-items="@Model.IngredientsSelection">
                         <option selected value="">Please select an Ingredient</option>
                     </select>
