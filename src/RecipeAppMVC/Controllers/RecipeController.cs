@@ -1,6 +1,7 @@
 ﻿using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PizzaShopDAL.Data;
 using RecipeAppDAL.Models;
@@ -40,12 +41,41 @@ namespace RecipeAppMVC.Controllers
         }
 
         [HttpGet, Authorize]
-        public IActionResult Create() => View(new CreateViewModel());
+        public async Task<IActionResult> Create()
+        {
+            return View(new CreateViewModel
+            {
+                IngredientsSelection = (await _db.Ingredients.AsNoTracking().ToListAsync()).Select(x => new SelectListItem
+                {
+                    Value = x.Id.ToString(),
+                    Text = x.Name
+                })
+            });
+        }
 
         [HttpPost, ActionName("Create")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateConfirm(CreateViewModel viewModel)
         {
+            if (viewModel.NewIngredient != null)
+            {
+                var output = new CreateViewModel
+                {
+                    Ingredients = viewModel.Ingredients,
+                    Name = viewModel.Name,
+                    Description = viewModel.Description
+                };
+                viewModel.NewIngredient.Ingredient = await _db.Ingredients.FirstOrDefaultAsync(x => x.Id == viewModel.NewIngredient.IngredientID);
+                output.Ingredients.Add(viewModel.NewIngredient);
+                
+                //i dont like it aswell, but for now it works
+                output.IngredientsSelection = (await _db.Ingredients.AsNoTracking().ToListAsync()).Select(x => new SelectListItem
+                {
+                    Value = x.Id.ToString(),
+                    Text = x.Name
+                });
+                return View(output);
+            }
             if (!ModelState.IsValid)
                 return View(viewModel);
 
@@ -97,9 +127,10 @@ namespace RecipeAppMVC.Controllers
             var recipe = await _db.Recipes.FirstOrDefaultAsync(x => x.Id == id);
             if (recipe == null)
                 return NotFound();
-            var reviews = _db.Reviews.Where(x => x.Recipe == recipe);
-            _db.Reviews.RemoveRange(reviews);
-            _db.Ingredients.RemoveRange(recipe.IngredientRecipe.Select(x => x.Ingredient));
+            // var reviews = _db.Reviews.Where(x => x.Recipe == recipe);
+            // _db.Reviews.RemoveRange(reviews);
+            var ingredientRecipes = recipe.IngredientRecipe;
+            _db.RemoveRange(ingredientRecipes);
             _db.Recipes.Remove(recipe);
             await _db.SaveChangesAsync();
             return RedirectToAction(nameof(Index));

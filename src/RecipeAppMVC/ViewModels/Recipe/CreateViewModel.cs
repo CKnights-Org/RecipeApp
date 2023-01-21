@@ -8,14 +8,15 @@ namespace RecipeAppMVC.ViewModels.Recipe
 {
     public class CreateViewModel
     {
-        [BindProperty, Required]
+        [Required]
         public string Name { get; set; } = "";
-        [BindProperty, Required]
+        [Required]
         public string Description { get; set; } = "";
-        [BindProperty, Required]
+        [Required]
         public IList<IngredientRecipe> Ingredients { get; set; } = new List<IngredientRecipe>();
-        [NotMapped]
-        public IngredientRecipe? NewIngredient { get; set; }
+        
+        // [NotMapped]
+        public IngredientRecipe NewIngredient { get; set; } = null!;
         [NotMapped]
         public IEnumerable<SelectListItem> IngredientsSelection { get; set; } = null!;
     }
