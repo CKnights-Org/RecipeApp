@@ -11,7 +11,7 @@ using RecipeAppDAL.Models;
 using RecipeAppDAL.Data;
 using Microsoft.Extensions.Options;
 
-namespace PizzaShopDAL.Data
+namespace RecipeAppDAL.Data
 {
     public class RecipeAppDBContext : DbContext
     {

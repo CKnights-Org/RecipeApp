@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using RecipeAppDAL.Models;
 using RecipeAppMVC.Models.Recipe;
+using RecipeAppMVC.ViewModels.Ingredient;
 
 namespace RecipeAppMVC.ViewModels.Recipe
 {
@@ -14,11 +15,6 @@ namespace RecipeAppMVC.ViewModels.Recipe
         [Required]
         public string Description { get; set; } = "";
         [Required]
-        public IList<IngredientModel> Ingredients { get; set; } = new List<IngredientModel>();
-        
-        // [NotMapped]
-        public IngredientModel? NewIngredient { get; set; }
-        [NotMapped]
-        public IEnumerable<SelectListItem>? IngredientsSelection { get; set; }
+        public IList<IngredientViewModel> Ingredients { get; set; } = new List<IngredientViewModel>();
     }
 }

@@ -1,9 +1,10 @@
 using Microsoft.EntityFrameworkCore;
-using PizzaShopDAL.Data;
+using RecipeAppDAL.Data;
 using RecipeAppMVC.Configs;
 using RecipeApp.IdentityLayer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Builder;
+using RecipeAppMVC.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +22,8 @@ builder.Services.AddDbContext<RecipeAppDBContext>(o =>
         .UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"))
         .UseLazyLoadingProxies();
 });
+
+builder.Services.AddScoped<IRecipeService, RecipeService>();
 
 builder.Services.AddAppIdentity(builder.Configuration);
 

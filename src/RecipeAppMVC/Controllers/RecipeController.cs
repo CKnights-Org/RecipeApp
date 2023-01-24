@@ -3,9 +3,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using PizzaShopDAL.Data;
+using RecipeAppDAL.Data;
 using RecipeAppDAL.Models;
 using RecipeAppMVC.Models.Recipe;
+using RecipeAppMVC.Services;
+using RecipeAppMVC.ViewModels.Ingredient;
 using RecipeAppMVC.ViewModels.Recipe;
 
 namespace RecipeAppMVC.Controllers
@@ -13,10 +15,12 @@ namespace RecipeAppMVC.Controllers
     public class RecipeController : Controller
     {
         private readonly RecipeAppDBContext _db;
+        private readonly IRecipeService _recipeService;
 
-        public RecipeController(RecipeAppDBContext dBContext)
+        public RecipeController(RecipeAppDBContext dBContext, IRecipeService recipeService)
         {
             _db = dBContext;
+            _recipeService = recipeService;
         }
 
         public IActionResult Index()
@@ -41,65 +45,75 @@ namespace RecipeAppMVC.Controllers
         }
 
         [HttpGet, Authorize]
-        public async Task<IActionResult> Create()
+        public async Task<IActionResult> RecipeSettings()
         {
+            var viewModel = new RecipeSettingsViewModel();
+            return View(viewModel);
+        }
+
+        [HttpPost, Authorize]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RecipeSettings(RecipeSettingsViewModel model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+
+            if (model.Aggreement != true)
+            {
+                ModelState.AddModelError("Aggreement", "Agreement needs to be checked");
+                return View(model);
+            }
+
+            return RedirectToAction(nameof(Create), new { ingredients = model.NumberOfIngredients });
+        }
+
+        [HttpGet, Authorize]
+        public async Task<IActionResult> Create(int ingredients = 5)
+        {
+            ingredients = ingredients > 0 ? ingredients : 5;
+
             var ingredientsAfterAdapt = (await _db.Ingredients.AsNoTracking().ToListAsync()).Adapt<List<IngredientModel>>();
-            return View(new CreateViewModel
+
+            var emptyIngredient = new IngredientViewModel
             {
                 IngredientsSelection = ingredientsAfterAdapt.Select(x => new SelectListItem
                 {
                     Value = x.Id.ToString(),
                     Text = x.Name
                 })
-            });
+            };
+
+            var viewmodel = new CreateViewModel
+            {
+                Ingredients = new List<IngredientViewModel>()
+            };
+
+            for (int i = 0; i < ingredients; i++)
+            {
+                viewmodel.Ingredients.Add(emptyIngredient);
+            }
+
+            return View(viewmodel);
         }
 
-        [HttpPost, ActionName("Create")]
+        [HttpPost, Authorize]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateConfirm(CreateViewModel viewModel)
+        public async Task<IActionResult> Create(CreateViewModel model)
         {
             if (!ModelState.IsValid)
-                return View(viewModel);
+                return View(model);
 
+            var recipe = new RecipeDetailModel()
+            {
+                Name = model.Name,
+                Description = model.Description,
+                Ingredients = model.Ingredients.Adapt<List<IngredientModel>>()
+            };
+
+            await _recipeService.CreateRecipeAsync(recipe);
 
             return RedirectToAction(nameof(Index));
         }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddIngredient(CreateViewModel viewModel)
-        {
-            //i dont like it aswell, but for now it works
-            var selection = (await _db.Ingredients.AsNoTracking().ToListAsync()).Adapt<List<IngredientModel>>().Select(x => new SelectListItem
-            {
-                Value = x.Id.ToString(),
-                Text = x.Name
-            });
-            if (!ModelState.IsValid)
-            {
-                viewModel.IngredientsSelection = selection;
-                return View(nameof(Create), viewModel);
-            }
-            var output = new CreateViewModel
-            {
-                Ingredients = viewModel.Ingredients,
-                Name = viewModel.Name,
-                Description = viewModel.Description
-            };
-
-            var ingredientInDB = await _db.Ingredients.FirstOrDefaultAsync(x => x.Id == viewModel.NewIngredient.Id);
-
-            if (ingredientInDB != null)
-            {
-                viewModel.NewIngredient = ingredientInDB.Adapt(viewModel.NewIngredient);
-            }
-
-            output.Ingredients.Add(viewModel.NewIngredient);
-
-            output.IngredientsSelection = selection;
-            return View(nameof(Create), output);
-        }
-
 
         [HttpGet, Authorize]
         public async Task<IActionResult> Edit(int? id)

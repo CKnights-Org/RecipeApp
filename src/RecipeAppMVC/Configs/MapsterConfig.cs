@@ -1,6 +1,7 @@
 ﻿using Mapster;
 using RecipeAppDAL.Models;
 using RecipeAppMVC.Models.Recipe;
+using RecipeAppMVC.ViewModels.Ingredient;
 using RecipeAppMVC.ViewModels.Recipe;
 using System;
 #pragma warning disable IDE0060
@@ -18,6 +19,13 @@ namespace RecipeAppMVC.Configs
             TypeAdapterConfig<IngredientRecipe, IngredientModel>    
                 .NewConfig()
                 .Map(dest => dest.Name, src => src.Ingredient.Name);
+
+            TypeAdapterConfig<IngredientViewModel, IngredientModel>
+                .NewConfig()
+                .Map(dest => dest.Id, src => src.Ingredient.Id)
+                .Map(dest => dest.Name, src => src.Ingredient.Name)
+                .Map(dest => dest.Amount, src => src.Ingredient.Amount)
+                .Map(dest => dest.TypeOfAmount, src => src.Ingredient.TypeOfAmount);
 
             TypeAdapterConfig<IEnumerable<Review>, RecipeReviewsSummaryModel>
                 .NewConfig()
