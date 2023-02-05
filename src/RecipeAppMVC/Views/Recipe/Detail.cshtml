@@ -8,7 +8,14 @@
 <ul class="list-group">
     @foreach (var ingredient in Model.Ingredients)
     {
-        <li class="list-group-item">@($"{ingredient.Amount}{ingredient.TypeOfAmount} {ingredient.Name}")</li>
+        if(ingredient.Ingredient != null)
+        {
+            <li class="list-group-item">@($"{ingredient.Ingredient.Amount}{ingredient.Ingredient.TypeOfAmount} {ingredient.Ingredient.Name}")</li>
+        }
+        else
+        {
+            <li class="list-group-item">Something went wrong with loading of this specific ingredient</li>
+        }
     }
 </ul>
 
