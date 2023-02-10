@@ -13,3 +13,7 @@ How to setup the project:
 7. Run the following command:
     > Update-Database -Context AppIdentityDbContext
 8. If everything went fine, you can start the app :)
+
+Troubleshooting:
+- You can kill the iisexpress using the following command: 
+    > `taskkill /IM iisexpress.exe`

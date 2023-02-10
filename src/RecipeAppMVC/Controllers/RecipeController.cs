@@ -3,9 +3,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using PizzaShopDAL.Data;
+using RecipeAppDAL.Data;
 using RecipeAppDAL.Models;
 using RecipeAppMVC.Models.Recipe;
+using RecipeAppMVC.Services;
+using RecipeAppMVC.ViewModels.Ingredient;
 using RecipeAppMVC.ViewModels.Recipe;
 
 namespace RecipeAppMVC.Controllers
@@ -13,10 +15,12 @@ namespace RecipeAppMVC.Controllers
     public class RecipeController : Controller
     {
         private readonly RecipeAppDBContext _db;
+        private readonly IRecipeService _recipeService;
 
-        public RecipeController(RecipeAppDBContext dBContext)
+        public RecipeController(RecipeAppDBContext dBContext, IRecipeService recipeService)
         {
             _db = dBContext;
+            _recipeService = recipeService;
         }
 
         public IActionResult Index()
@@ -37,119 +41,163 @@ namespace RecipeAppMVC.Controllers
                 return NotFound();
             }
 
-            return View(ConvertRecipeToRecipeDetail(recipe));
+            return View(await ConvertRecipeToRecipeDetail(recipe, _db));
         }
 
         [HttpGet, Authorize]
-        public async Task<IActionResult> Create()
+        public async Task<IActionResult> RecipeSettings()
         {
+            var viewModel = new RecipeSettingsViewModel();
+            return View(viewModel);
+        }
+
+        [HttpPost, Authorize]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RecipeSettings(RecipeSettingsViewModel model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+
+            if (model.Aggreement != true)
+            {
+                ModelState.AddModelError("Aggreement", "Agreement needs to be checked");
+                return View(model);
+            }
+
+            return RedirectToAction(nameof(Create), new { ingredients = model.NumberOfIngredients });
+        }
+
+        [HttpGet, Authorize]
+        public async Task<IActionResult> Create(int ingredients = 5)
+        {
+            ingredients = ingredients > 0 ? ingredients : 5;
+
             var ingredientsAfterAdapt = (await _db.Ingredients.AsNoTracking().ToListAsync()).Adapt<List<IngredientModel>>();
-            return View(new CreateViewModel
+
+            var emptyIngredient = new IngredientViewModel
             {
                 IngredientsSelection = ingredientsAfterAdapt.Select(x => new SelectListItem
                 {
                     Value = x.Id.ToString(),
                     Text = x.Name
                 })
-            });
+            };
+
+            var viewmodel = new CreateViewModel
+            {
+                Ingredients = new List<IngredientViewModel>()
+            };
+
+            for (int i = 0; i < ingredients; i++)
+            {
+                viewmodel.Ingredients.Add(emptyIngredient);
+            }
+
+            return View(viewmodel);
         }
 
-        [HttpPost, ActionName("Create")]
+        [HttpPost, Authorize]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateConfirm(CreateViewModel viewModel)
+        public async Task<IActionResult> Create(CreateViewModel model)
         {
             if (!ModelState.IsValid)
-                return View(viewModel);
+            {
+                return View(model);
+            }
 
+            var recipe = new RecipeDetailModel()
+            {
+                Name = model.Name,
+                Description = model.Description,
+                Ingredients = model.Ingredients,
+            };
+
+            await _recipeService.CreateRecipeAsync(recipe);
 
             return RedirectToAction(nameof(Index));
         }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddIngredient(CreateViewModel viewModel)
-        {
-            //i dont like it aswell, but for now it works
-            var selection = (await _db.Ingredients.AsNoTracking().ToListAsync()).Adapt<List<IngredientModel>>().Select(x => new SelectListItem
-            {
-                Value = x.Id.ToString(),
-                Text = x.Name
-            });
-            if (!ModelState.IsValid)
-            {
-                viewModel.IngredientsSelection = selection;
-                return View(nameof(Create), viewModel);
-            }
-            var output = new CreateViewModel
-            {
-                Ingredients = viewModel.Ingredients,
-                Name = viewModel.Name,
-                Description = viewModel.Description
-            };
-
-            var ingredientInDB = await _db.Ingredients.FirstOrDefaultAsync(x => x.Id == viewModel.NewIngredient.Id);
-
-            if (ingredientInDB != null)
-            {
-                viewModel.NewIngredient = ingredientInDB.Adapt(viewModel.NewIngredient);
-            }
-
-            output.Ingredients.Add(viewModel.NewIngredient);
-
-            output.IngredientsSelection = selection;
-            return View(nameof(Create), output);
-        }
-
 
         [HttpGet, Authorize]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
+            {
                 return NotFound();
-            var recipe = await _db.Recipes.FirstOrDefaultAsync(x => x.Id == id);
-            if (recipe == null)
-                return NotFound();
+            }
 
-            return View(recipe.Adapt<EditViewModel>());
+            var recipe = await _db.Recipes.FirstOrDefaultAsync(x => x.Id == id);
+
+            if (recipe == null)
+            {
+                return NotFound();
+            }
+
+            return View(await ConvertRecipeToRecipeDetail(recipe, _db));
         }
 
-        [HttpPost, ActionName("Edit")]
+        [HttpPost, Authorize]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditConfirm(EditViewModel viewModel)
+        public async Task<IActionResult> Edit(RecipeDetailModel viewModel)
         {
             if (!ModelState.IsValid)
+            {
                 return View(viewModel);
+            }
 
-            return RedirectToAction(nameof(Index));
+            if (viewModel.Id == 0)
+            {
+                return BadRequest();
+            }
+
+            var recipe = await _recipeService.UpdateRecipeAsync(viewModel);
+
+            if (recipe == null)
+            {
+                return NotFound();
+            }
+
+            return RedirectToAction(nameof(Edit), new { id = recipe.Id });
         }
 
         [HttpGet, Authorize]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
+            {
                 return NotFound();
+            }
 
             var recipe = await _db.Recipes.FirstOrDefaultAsync(x => x.Id == id);
 
             if (recipe == null)
+            {
                 return NotFound();
+            }
 
-            var vm = await recipe.BuildAdapter().AdaptToTypeAsync<DeleteViewModel>();
-            return View(vm);
+            return View(await ConvertRecipeToRecipeDetail(recipe, _db));
         }
-        [HttpPost, ActionName("Delete")]
+
+        [HttpPost, Authorize]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirm(int id, DeleteViewModel vm)
+        public async Task<IActionResult> Delete(int? id, RecipeDetailModel viewModel)
         {
-            if (id == 0)
+            if (id == null)
+            {
                 return BadRequest();
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(viewModel);
+            }
+
             var recipe = await _db.Recipes.FirstOrDefaultAsync(x => x.Id == id);
+            
             if (recipe == null)
+            {
                 return NotFound();
-            // var reviews = _db.Reviews.Where(x => x.Recipe == recipe);
-            // _db.Reviews.RemoveRange(reviews);
-            var ingredientRecipes = recipe.IngredientRecipe;
-            _db.RemoveRange(ingredientRecipes);
+            }
+
             _db.Recipes.Remove(recipe);
             await _db.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
@@ -162,12 +210,24 @@ namespace RecipeAppMVC.Controllers
             return result;
         }
 
-        private static RecipeDetailModel ConvertRecipeToRecipeDetail(Recipe recipe)
+        private static async Task<RecipeDetailModel> ConvertRecipeToRecipeDetail(Recipe recipe, RecipeAppDBContext db)
         {
             var result = recipe.Adapt<RecipeDetailModel>();
             result.ReviewsSummary = recipe.Reviews.Adapt<RecipeReviewsSummaryModel>();
-            result.Ingredients = recipe.IngredientRecipe.Adapt<List<IngredientModel>>();
+            result.Ingredients = recipe.IngredientRecipe.Adapt<List<IngredientViewModel>>();
             result.Reviews = recipe.Reviews.Adapt<List<ReviewModel>>();
+
+            var ingredientsAfterAdapt = (await db.Ingredients.AsNoTracking().ToListAsync()).Adapt<List<IngredientModel>>();
+
+            foreach (var ingredient in result.Ingredients)
+            {
+                ingredient.IngredientsSelection = ingredientsAfterAdapt.Select(x => new SelectListItem
+                {
+                    Value = x.Id.ToString(),
+                    Text = x.Name
+                }); ;
+            }
+
             return result;
         }
     }

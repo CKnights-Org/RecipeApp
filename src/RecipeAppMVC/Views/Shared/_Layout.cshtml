@@ -7,6 +7,9 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/RecipeAppMVC.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" type="text/css">
+    <link rel="stylesheet" href="~/css/wireframe.css">
+    <link rel="stylesheet" href="~/css/wireframe.scss">
 </head>
 <body>
     <header>
@@ -26,6 +29,9 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Recipe" asp-action="Index">Recipe List</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Recipe" asp-action="RecipeSettings">Create Recipe</a>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -37,7 +43,7 @@
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
+    <footer class="border-top footer text-muted" style="position: unset">
         <div class="container">
             &copy; 2022 - RecipeAppMVC - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>

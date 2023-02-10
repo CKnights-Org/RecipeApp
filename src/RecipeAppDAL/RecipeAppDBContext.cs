@@ -11,7 +11,7 @@ using RecipeAppDAL.Models;
 using RecipeAppDAL.Data;
 using Microsoft.Extensions.Options;
 
-namespace PizzaShopDAL.Data
+namespace RecipeAppDAL.Data
 {
     public class RecipeAppDBContext : DbContext
     {
@@ -44,15 +44,18 @@ namespace PizzaShopDAL.Data
 
             modelBuilder.Entity<IngredientRecipe>()
                 .HasOne(x => x.Recipe)
-                .WithMany(x => x.IngredientRecipe);
+                .WithMany(x => x.IngredientRecipe)
+                // https://stackoverflow.com/a/55233703/9559884
+                .OnDelete(DeleteBehavior.Cascade);
+
             modelBuilder.Entity<IngredientRecipe>()
                 .HasOne(x => x.Ingredient)
-                .WithMany(x => x.IngredientRecipe);
+                .WithMany(x => x.IngredientRecipe)
+                .OnDelete(DeleteBehavior.SetNull);
 
             modelBuilder.Entity<Recipe>()
                 .HasMany(x => x.Reviews)
                 .WithOne(x => x.Recipe);
-
 
             // foreach (var relationship in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
             // {

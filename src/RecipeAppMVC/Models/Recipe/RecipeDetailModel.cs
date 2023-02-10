@@ -1,9 +1,11 @@
-﻿namespace RecipeAppMVC.Models.Recipe
+﻿using RecipeAppMVC.ViewModels.Ingredient;
+
+namespace RecipeAppMVC.Models.Recipe
 {
     public class RecipeDetailModel : RecipeSummaryModel
     {
-        public List<IngredientModel> Ingredients { get; set; }= null!;
+        public IList<IngredientViewModel> Ingredients { get; set; } = new List<IngredientViewModel>();
 
-        public List<ReviewModel> Reviews { get; set; }= null!;
+        public List<ReviewModel>? Reviews { get; set; }
     }
 }
