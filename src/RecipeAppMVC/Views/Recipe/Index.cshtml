@@ -1,10 +1,8 @@
 ﻿@using RecipeAppMVC.Controllers;
 @using RecipeAppMVC.Models.Recipe;
 @model List<RecipeSummaryModel>
-
 @{
-    var recipeControllerName = nameof(RecipeController);
-    recipeControllerName = recipeControllerName.Substring(0, recipeControllerName.LastIndexOf("Controller"));
+    ViewData["Title"] = "Confirm deletion";
 }
 
 <div class="container">
@@ -20,10 +18,11 @@
                         <h5 class="card-title">@item.Name</h5>
                         <p class="card-text">@item.Description</p>
                         <p class="card-text">@($"{item.ReviewsSummary.Rating}/5 ({item.ReviewsSummary.RatingCount})")</p>
-                        @Html.ActionLink("Go to", nameof(RecipeController.Detail), recipeControllerName, new { id = item.Id})
+                        <a asp-action="Detail" asp-route-id="@item.Id">Go to</a>
                     </div>
                 </div>
             </div>
         }
     </div>
+    <a asp-action="Create">Add new Recipe</a>
 </div>
