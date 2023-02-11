@@ -1,0 +1,51 @@
+@model RecipeAppMVC.Models.Recipe.RecipeDetailModel
+@{
+    ViewData["Title"] = "Confirm deletion";
+}
+
+<div class="row">
+    <div class="col-1"></div>
+    <div class="col-10">
+        <h3>Are you sure you want to delete the recipe?</h3>
+        <form asp-action="Delete">
+            @Html.HiddenFor(a => a.Id)
+            <div class="form-group row">
+                <div class="col">
+                    @Html.LabelFor(a => a.Name)
+                    @Html.HiddenFor(a => a.Name)
+                    @Html.TextAreaFor(a => a.Name)
+                    <h5>@Model.Name</h5>
+                </div>
+                <div class="col">
+                    @Html.LabelFor(a => a.Description)
+                    @Html.HiddenFor(a => a.Description)
+                    @Html.TextAreaFor(a => a.Description)
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Ingredients: </label>
+                <ul>
+                    @if (Model.Ingredients != null)
+                    {
+                        @foreach (var item in Model.Ingredients)
+                        {
+                            if (item.Ingredient != null)
+                            {
+                                <li>
+                                    @item.Ingredient.Amount @item.Ingredient.TypeOfAmount of @item.Ingredient.Name
+                                </li>
+                            }
+                        }
+                    }
+                </ul>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Delete" class="btn btn-danger" />
+                <a class="btn btn-primary" asp-action="Index">Go back</a>
+            </div>
+        </form>
+    </div>
+    <div class="col-1"></div>
+</div>

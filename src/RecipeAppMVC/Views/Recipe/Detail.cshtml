@@ -1,13 +1,21 @@
 ﻿@using RecipeAppMVC.Models.Recipe;
-
 @model RecipeDetailModel;
-
+@{
+    ViewData["Title"] = "Recipe details";
+}
 <p>@Model.Name</p>
 
 <ul class="list-group">
     @foreach (var ingredient in Model.Ingredients)
     {
-        <li class="list-group-item">@($"{ingredient.Amount}{ingredient.TypeOfAmount} {ingredient.Name}")</li>
+        if(ingredient.Ingredient != null)
+        {
+            <li class="list-group-item">@($"{ingredient.Ingredient.Amount}{ingredient.Ingredient.TypeOfAmount} {ingredient.Ingredient.Name}")</li>
+        }
+        else
+        {
+            <li class="list-group-item">Something went wrong with loading of this specific ingredient</li>
+        }
     }
 </ul>
 
@@ -19,3 +27,8 @@
         <li class="list-group-item">@($"{review.ReviewerName} -> {review.Rating}")</li>
     }
 </ul>
+<div class="row mt-3 mx-1 gap-3">
+    <a class="col btn btn-primary" asp-action="Index">Go Back</a>
+    <a class="col btn btn-warning" asp-action="Edit"   asp-route-id="@Model.Id">Edit</a>
+    <a class="col btn btn-danger"  asp-action="Delete" asp-route-id="@Model.Id">Delete</a>
+</div>

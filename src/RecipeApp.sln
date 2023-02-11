@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33205.214
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RecipeAppMVC", "RecipeAppMVC\RecipeAppMVC.csproj", "{574EAAC0-A9C6-4D2F-920C-41E4FFA8F9C8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RecipeAppMVC", "RecipeAppMVC\RecipeAppMVC.csproj", "{574EAAC0-A9C6-4D2F-920C-41E4FFA8F9C8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RecipeAppDAL", "RecipeAppDAL\RecipeAppDAL.csproj", "{6E773604-3234-4EA9-9B98-A0CDF9E9A1A4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RecipeAppDAL", "RecipeAppDAL\RecipeAppDAL.csproj", "{6E773604-3234-4EA9-9B98-A0CDF9E9A1A4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RecipeApp.IdentityLayer", "RecipeApp.IdentityLayer\RecipeApp.IdentityLayer.csproj", "{35979EE2-CE64-4621-949E-5F89CE7E7162}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RecipeApp.IdentityLayer", "RecipeApp.IdentityLayer\RecipeApp.IdentityLayer.csproj", "{35979EE2-CE64-4621-949E-5F89CE7E7162}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
